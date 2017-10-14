@@ -18,7 +18,7 @@
 \begin{document}
 \maketitle
 
-\section*{Lattices}
+\section{Lattices}
 A \textbf{partially ordered set} $(S, \leq)$ is a set $S$ together with a
 relation $\leq$ on $S$ that is \textit{reflexive}, \textit{antisymmetric}, and
 \textit{transitive}. An element $c \in S$ is an \textbf{upper bound} of $a, b
@@ -47,7 +47,7 @@ Similarly, given two join semilattices $(S_1, \join_1)$ and $(S_2, \join_2)$,
 we can construct the product semilattice $(S_1 \times S_2, \join)$ where $(a_1,
 a_2) \join (b_1, b_2) = (a_1 \join_1 b_1, a_2 \join_2 b_2)$.
 
-\section*{\fluentl}
+\section{\fluentl}
 A \fluentl{} program consists of a sequence of \textbf{variable declarations}
 and a sequence of \textbf{rules}. The declarations declare and initialize a set
 $x_1, \ldots, x_m$ of variables where $x_i$ stores a value from a join
@@ -68,24 +68,56 @@ s$, $m_1(r, r') = r \cup r'$, $g_2(r) = |r|$, and $m_2(x, x') = x'$.
   $x \gets |r|$
 \end{lstlisting}
 
-\section*{\fluentl{} Properties}
+\section{\fluentl{} Properties}
 We say a function $f: S \to S'$ from one partially ordered set to another is
 \textbf{monotonic} if for all $a, b \in S$, $a \leq b \implies f(a) \leq f(b)$.
-%
 We say a function $f: S \to S$ from a partially ordered set to itself is
-\textbf{increasing} if for all $a \in S$, $a \leq f(a)$.
-%
-We similarly say a method $m: (S \times S') \to S$ is increasing if for all $a
-\in S$ and for all $a' \in S'$, $a \leq m(a, a')$.
+\textbf{increasing} if for all $a \in S$, $a \leq f(a)$. We similarly say a
+method $m: (S \times S') \to S$ is increasing if for all $a \in S$ and for all
+$a' \in S'$, $a \leq m(a, a')$. Refer to \secref{proofs} for properties of
+monotonic and increasing functions.
 
 Let $\bar{S}$ be the product semilattice formed from $S_1, \ldots, S_m$. Then,
-we can view a \fluentl{} program as a function $f: \bar{S} \to \bar{S}$. Doing
-so, we can ask whether $f$ is increasing and whether it is monotonic.
-\clmref{monotonic-to-increasing} and \clmref{increasing-to-monotonic} show us
-that neither monotonicity nor increasingness implies the other, so we'll have
-to consider quite a few cases:
+we can view a \fluentl{} program as a function $f: \bar{S} \to \bar{S}$. Next,
+we consider sufficient conditions under which $f$ is monotonic and under which
+$f$ is increasing.
 
-\section*{Proofs}
+\begin{claim}
+  If every function and method in a \fluentl{} program $f$ is monotonic, then
+  $f$ is monotonic.
+\end{claim}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{claim}
+  If every method in a \fluentl{} program $f$ is increasing, then $f$ is
+  increasing.
+\end{claim}
+\begin{proof}
+  TODO
+\end{proof}
+
+\appendix
+\section{Characterizing Monotonicity and Increasingness}\label{sec:proofs}
+\begin{claim}\label{clm:monotonic-closed}
+  Given two monotonic functions $f: B \to C$ and $g: A \to B$, $f \circ g$ is
+  monotonic. That is, monotonic functions are closed under composition.
+\end{claim}
+\begin{proof}
+  Let $a, b \in A$ where $a \leq b$. Because $g$ is monotonic, $g(a) \leq
+  g(b)$. Then because $f$ is monotonic, $f(g(a)) \leq f(g(b))$.
+\end{proof}
+
+\begin{claim}\label{clm:increasing-closed}
+  Given two increasing functions $f: S \to S$ and $g: S \to S$, $f \circ g$ is
+  increasing. That is, increasing functions are closed under composition.
+\end{claim}
+\begin{proof}
+  Let $a \in A$. Because $g$ is increasing, $a \leq g(a)$. Because $f$ is
+  increasing, $g(a) \leq f(g(a))$. Thus, $a \leq f(g(a))$.
+\end{proof}
+
 \begin{claim}\label{clm:monotonic-to-increasing}
   If $f: S \to S$ is monotonic, it may not be increasing.
 \end{claim}
