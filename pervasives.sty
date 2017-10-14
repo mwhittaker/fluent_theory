@@ -1,0 +1,44 @@
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bbm}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+
+% Theorems, Lemmas, Claims, etc.
+\newtheorem{claim}{Claim}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+% References.
+\newcommand{\appref}[1]{Appendix~\ref{app:#1}}
+\newcommand{\clmref}[1]{Claim~\ref{clm:#1}}
+\newcommand{\figref}[1]{Figure~\ref{fig:#1}}
+\newcommand{\lemref}[1]{Lemma~\ref{lem:#1}}
+\newcommand{\lstref}[1]{Listing~\ref{lst:#1}}
+\newcommand{\secref}[1]{Section~\ref{sec:#1}}
+\newcommand{\thmref}[1]{Theorem~\ref{thm:#1}}
+
+% Surrounding symbols
+\DeclarePairedDelimiter{\set}{\{}{\}}
+\DeclarePairedDelimiterX{\setst}[2]{\{}{\}}{#1 \,\delimsize|\, #2}
+\DeclarePairedDelimiter{\parens}{(}{)}
+\DeclarePairedDelimiter{\cyclic}{\langle}{\rangle}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+% Symbols
+\newcommand{\powersetsymbol}{\mathscr{P}}
+\newcommand{\nats}{\mathbb{N}}
+\newcommand{\ints}{\mathbb{Z}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\rats}{\mathbb{Q}}
+\newcommand{\bools}{\mathbbm{2}}
+\newcommand{\normalsubgroup}{\triangleleft}
+\newcommand{\normalsubgroupeq}{\trianglelefteq}
+
+% misc
+\DeclarePairedDelimiter{\powerset}{\powersetsymbol(}{)}
+\DeclarePairedDelimiter{\Ker}{\text{Ker}(}{)}

@@ -1,0 +1,109 @@
+\documentclass{mwhittaker}
+\title{\fluentl}
+\author{\ }
+\date{\ }
+
+\usepackage{listings}
+\usepackage{pervasives}
+
+\newcommand{\join}{\sqcup}
+\newcommand{\fluentl}{Fluent$^L$}
+
+\lstset{ %
+  basicstyle=\linespread{0.8}\ttfamily,
+  mathescape=true
+}
+
+
+\begin{document}
+\maketitle
+
+\section*{Lattices}
+A \textbf{partially ordered set} $(S, \leq)$ is a set $S$ together with a
+relation $\leq$ on $S$ that is \textit{reflexive}, \textit{antisymmetric}, and
+\textit{transitive}. An element $c \in S$ is an \textbf{upper bound} of $a, b
+\in S$ if $a \leq c$ and $b \leq c$. An element $c \in S$ is a \textbf{least
+upper bound} of $a, b \in S$ if $c$ is an upper bound of $a$ and $b$ and for
+any other upper bound $d$ of $a$ and $b$, $c \leq d$.
+
+A \textbf{join semilattice} is a partially ordered set $(S, \leq)$ in which
+every pair of elements $a, b \in S$ has a least upper bound. We write this
+least upper bound as $a \join b$, read ``$a$ join $b$''. For example, the
+semilattices $(2^A, \subseteq)$, $(2^A, \supseteq)$, $(\ints, \leq)$, $(\ints,
+\geq)$, $(\bools, \Rightarrow)$, and $(\bools, \Leftarrow)$ have join operators
+$\cup$, $\cap$, $\max$, $\min$, $\lor$, and $\land$ respectively. Note that
+$\leq$ induces $\join$ and that $\join$ is \textit{associative},
+\textit{commutative}, and \textit{idempotent}.
+%
+We can equivalently define a \textbf{join semilattice} $(S, \join)$ as a set
+$S$ together with an associative, commutative, and idempotent binary operator
+$\join$. Now, $\join$ induces a partial order $\leq$ in which $a \leq b \iff a
+\join b = b$.
+
+Given two join semilattices $(S_1, \leq_1)$ and $(S_2, \leq_2)$, we can
+construct the \textbf{product semilattice} $(S_1 \times S_2, \leq)$ where
+$(a_1, a_2) \leq (b_1, b_2) \iff a_1 \leq_1 b_1 \land a_2 \leq_2 b_2$.
+Similarly, given two join semilattices $(S_1, \join_1)$ and $(S_2, \join_2)$,
+we can construct the product semilattice $(S_1 \times S_2, \join)$ where $(a_1,
+a_2) \join (b_1, b_2) = (a_1 \join_1 b_1, a_2 \join_2 b_2)$.
+
+\section*{\fluentl}
+A \fluentl{} program consists of a sequence of \textbf{variable declarations}
+and a sequence of \textbf{rules}. The declarations declare and initialize a set
+$x_1, \ldots, x_m$ of variables where $x_i$ stores a value from a join
+semilattice $(S_i, \leq_i)$. After the declarations come the rules $r_1,
+\ldots, r_n$ where $r_k$ is of the form $x_j \gets m_k(x_j, g_k(\bar{x}))$
+where $x_j$ is one of $x_1, \ldots, x_m$; $\bar{x} = x_{i_1}, \ldots, x_{i_l}$
+is some subsequence of $x_1, \ldots, x_m$; $g$ is a function of type $S_{i_1}
+\times \ldots \times S_{i_l} \to S$ for some join semilattice $(S, \leq)$; and
+$m$ is a function (called a \textbf{method}) of type $S_j \times S \to S_j$.
+For example, consider the following \fluentl{} program where $g_1(r, s) = r -
+s$, $m_1(r, r') = r \cup r'$, $g_2(r) = |r|$, and $m_2(x, x') = x'$.
+
+\begin{lstlisting}
+  val $r$: $(2^{\ints \times \ints}, \subseteq)$
+  val $s$: $(2^{\ints \times \ints}, \subseteq)$
+  val $x$: $(\ints, \leq)$
+  $r \gets r \cup (r - s)$
+  $x \gets |r|$
+\end{lstlisting}
+
+\section*{\fluentl{} Properties}
+We say a function $f: S \to S'$ from one partially ordered set to another is
+\textbf{monotonic} if for all $a, b \in S$, $a \leq b \implies f(a) \leq f(b)$.
+%
+We say a function $f: S \to S$ from a partially ordered set to itself is
+\textbf{increasing} if for all $a \in S$, $a \leq f(a)$.
+%
+We similarly say a method $m: (S \times S') \to S$ is increasing if for all $a
+\in S$ and for all $a' \in S'$, $a \leq m(a, a')$.
+
+Let $\bar{S}$ be the product semilattice formed from $S_1, \ldots, S_m$. Then,
+we can view a \fluentl{} program as a function $f: \bar{S} \to \bar{S}$. Doing
+so, we can ask whether $f$ is increasing and whether it is monotonic.
+\clmref{monotonic-to-increasing} and \clmref{increasing-to-monotonic} show us
+that neither monotonicity nor increasingness implies the other, so we'll have
+to consider quite a few cases:
+
+\section*{Proofs}
+\begin{claim}\label{clm:monotonic-to-increasing}
+  If $f: S \to S$ is monotonic, it may not be increasing.
+\end{claim}
+\begin{proof}
+  Let $f: \ints \to \ints$ be a function between the integers ordered by $\leq$
+  where $f(x) = 0$. $f$ is monotonic because for all $a, b \in \ints$, $f(a) =
+  0 \leq 0 = f(b)$. However, $f$ is not increasing because $f(1) = 0$ but $1 >
+  0$.
+\end{proof}
+
+\begin{claim}\label{clm:increasing-to-monotonic}
+  If $f: S \to S$ is increasing, it may not be monotonic.
+\end{claim}
+\begin{proof}
+  Let $f: \set{1,2,3} \to \set{1,2,3}$ be a function between the integers
+  $\set{1, 2, 3}$ ordered by $\leq$ where $f(1) = 3$, $f(2) = 2$ and $f(3) =
+  3$. $f$ is increasing because $1 \leq 3 = f(3)$, $2 \leq 2 = f(2)$, and $3
+  \leq 3 = f(3)$. However, $f$ is not monotonic because $1 \leq 2$ but $f(1) =
+  3 > 2 = f(2)$.
+\end{proof}
+\end{document}
