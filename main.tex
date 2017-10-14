@@ -57,8 +57,10 @@ where $x_j$ is one of $x_1, \ldots, x_m$; $\bar{x} = x_{i_1}, \ldots, x_{i_l}$
 is some subsequence of $x_1, \ldots, x_m$; $g$ is a function of type $S_{i_1}
 \times \ldots \times S_{i_l} \to S$ for some join semilattice $(S, \leq)$; and
 $m$ is a function (called a \textbf{method}) of type $S_j \times S \to S_j$.
-For example, consider the following \fluentl{} program where $g_1(r, s) = r -
-s$, $m_1(r, r') = r \cup r'$, $g_2(r) = |r|$, and $m_2(x, x') = x'$.
+A \fluentl{} program executes by evaluating $r_1$, then $r_2$, then $r_3$ and
+so on until $r_n$. Every rule is executed once; there is no recursion.  For
+example, consider the following \fluentl{} program where $g_1(r, s) = r - s$,
+$m_1(r, r') = r \cup r'$, $g_2(r) = |r|$, and $m_2(x, x') = x'$.
 
 \begin{lstlisting}
   val $r$: $(2^{\ints \times \ints}, \subseteq)$
