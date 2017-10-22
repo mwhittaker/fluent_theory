@@ -1,0 +1,90 @@
+\documentclass{mwhittaker}
+\title{CALM}
+\author{\ }
+\date{\ }
+
+\usepackage{listings}
+\usepackage{pervasives}
+
+\newcommand{\join}{\sqcup}
+\newcommand{\fluentl}{Fluent$^L$}
+
+\lstset{ %
+  basicstyle=\linespread{0.8}\ttfamily,
+  mathescape=true
+}
+
+\begin{document}
+\maketitle
+Given a set $A$, function $f: 2^A \to 2^A$, and elements $a, b \subseteq A$,
+when is it guaranteed that $f(f(a) \cup b) = f(f(b) \cup a)$?
+
+\begin{itemize}
+  \item \textbf{$f$ being increasing is not sufficient.}
+    Let $A = \nats$, $a = \set{0}$, $b = \set{0, 1}$, and \[
+      f(x) = \begin{cases}
+        \set{0, 1} & x = \set{0} \\
+        \set{0, 1, 2} & x = \set{0, 1} \\
+        \set{0, 1, 2, 3} & x = \set{0, 1, 2} \\
+        x & \text{otherwise} \\
+      \end{cases}
+    \]
+    Clearly $f$ is increasing, but
+    \begin{gather*}
+      f(f(a) \cup b)
+        = f(f(\set{0}) \cup \set{0, 1})
+        = f(\set{0, 1} \cup \set{0, 1})
+        = f(\set{0, 1})
+        = \set{0, 1, 2} \\
+      f(f(b) \cup a)
+        = f(f(\set{0, 1}) \cup \set{0})
+        = f(\set{0, 1, 2} \cup \set{0})
+        = f(\set{0, 1, 2})
+        = \set{0, 1, 2, 3}
+    \end{gather*}
+
+  \item \textbf{$f$ being monotonic is not sufficient.}
+    Let $A = \nats$, $a = \set{0, 1}$, and $b = \set{0, 1, 2}$. Given a
+    non-empty set $x$, let $\max(x)$ be the largest element in $x$. Let \[
+      f(x) = \begin{cases}
+        \emptyset & x = \emptyset \\
+        x - \set{\max(x)} & x \neq \emptyset
+      \end{cases}
+    \]
+    Next, we show that $f$ is monotonic. Consider arbitrary $x, y \subseteq
+    \nats$ such that $x \subseteq y$.
+    \begin{itemize}
+      \item Case $x = \emptyset, y \neq \emptyset$.
+        $f(x) = \emptyset$ which is a subset of all other sets, including
+        $f(y)$.
+
+      \item Case $x \neq \emptyset, y \neq \emptyset$.
+        If $\max(x) = \max(y)$, then clearly $x - \set{\max(x)} \subseteq y -
+        \set{\max(y)}$. Otherwise, $\max(x) \neq \max(y)$. In this case,
+        $\max(y)$ cannot be smaller than $\max(x)$ because $\max(x) \in y$.
+        Thus, $\max(y) \geq \max(x)$ and therefore $\max(y) \notin x$. Thus, $x
+        - \set{\max(x)} \subseteq y - \set{\max(y)}$.
+
+      \item Case $y = \emptyset$.
+        Because $x \subseteq y$, $x$ must also be the empty set. Then, $f(x) =
+        \emptyset \subseteq \emptyset = f(y)$.
+    \end{itemize}
+    Finally,
+    \begin{gather*}
+      f(f(a) \cup b)
+        = f(f(\set{0, 1}) \cup \set{0, 1, 2})
+        = f(\set{0} \cup \set{0, 1, 2})
+        = f(\set{0, 1, 2})
+        = \set{0, 1} \\
+        f(f(b) \cup a)
+        = f(f(\set{0, 1, 2}) \cup \set{0, 1})
+        = f(\set{0, 1} \cup \set{0, 1})
+        = f(\set{0, 1})
+        = \set{0}
+    \end{gather*}
+\end{itemize}
+
+If $f$ is monotonic, and if $f(f(a) \cup b) = f(f(a \cup b))$, then $f$ is
+order-insensitive.
+
+\end{document}
