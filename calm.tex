@@ -16,75 +16,146 @@
 
 \begin{document}
 \maketitle
-Given a set $A$, function $f: 2^A \to 2^A$, and elements $a, b \subseteq A$,
-when is it guaranteed that $f(f(a) \cup b) = f(f(b) \cup a)$?
 
-\begin{itemize}
-  \item \textbf{$f$ being increasing is not sufficient.}
-    Let $A = \nats$, $a = \set{0}$, $b = \set{0, 1}$, and \[
-      f(x) = \begin{cases}
-        \set{0, 1} & x = \set{0} \\
-        \set{0, 1, 2} & x = \set{0, 1} \\
-        \set{0, 1, 2, 3} & x = \set{0, 1, 2} \\
-        x & \text{otherwise} \\
-      \end{cases}
-    \]
-    Clearly $f$ is increasing, but
-    \begin{gather*}
-      f(f(a) \cup b)
-        = f(f(\set{0}) \cup \set{0, 1})
-        = f(\set{0, 1} \cup \set{0, 1})
-        = f(\set{0, 1})
-        = \set{0, 1, 2} \\
-      f(f(b) \cup a)
-        = f(f(\set{0, 1}) \cup \set{0})
-        = f(\set{0, 1, 2} \cup \set{0})
-        = f(\set{0, 1, 2})
-        = \set{0, 1, 2, 3}
-    \end{gather*}
+Consider a program whose state is drawn from some domain $S$. We can model the
+program as a function $f: S \to S$ which transforms the input state to some
+output state. Now imagine we repeatedly receive a set of states $a, b, c,
+\ldots$ over the network. Whenever we receive a new state, we merge it into the
+current state using some merge function $\join$, then run $f$ to update our
+state. For example, if we started off in state $a$ and received states $b$ and
+$c$ over the network, the execution of our program would look something like
+this:
+\[
+  a \to f(a)
+    \to f(a) \join b
+    \to f(f(a) \join b)
+    \to f(f(a) \join b) \join c
+    \to f(f(f(a) \join b) \join c)
+\]
 
-  \item \textbf{$f$ being monotonic is not sufficient.}
-    Let $A = \nats$, $a = \set{0, 1}$, and $b = \set{0, 1, 2}$. Given a
-    non-empty set $x$, let $\max(x)$ be the largest element in $x$. Let \[
-      f(x) = \begin{cases}
-        \emptyset & x = \emptyset \\
-        x - \set{\max(x)} & x \neq \emptyset
-      \end{cases}
-    \]
-    Next, we show that $f$ is monotonic. Consider arbitrary $x, y \subseteq
-    \nats$ such that $x \subseteq y$.
-    \begin{itemize}
-      \item Case $x = \emptyset, y \neq \emptyset$.
-        $f(x) = \emptyset$ which is a subset of all other sets, including
-        $f(y)$.
+Similarly, if we had instead started off in state $c$ and then received states
+$b$ and $a$ over the network, our execution would look like this:
+\[
+  c \to f(c)
+    \to f(c) \join b
+    \to f(f(c) \join b)
+    \to f(f(c) \join b) \join a
+    \to f(f(f(c) \join b) \join a)
+\]
 
-      \item Case $x \neq \emptyset, y \neq \emptyset$.
-        If $\max(x) = \max(y)$, then clearly $x - \set{\max(x)} \subseteq y -
-        \set{\max(y)}$. Otherwise, $\max(x) \neq \max(y)$. In this case,
-        $\max(y)$ cannot be smaller than $\max(x)$ because $\max(x) \in y$.
-        Thus, $\max(y) \geq \max(x)$ and therefore $\max(y) \notin x$. Thus, $x
-        - \set{\max(x)} \subseteq y - \set{\max(y)}$.
+Say a function $f$ is \textbf{order-insensitive} if it is confluent (e.g.
+$f(f(f(a) \join b) \join c) = f(f(f(c) \join b) \join a)$) and if all
+intermediate states are less than the final state (e.g.  $f(a) \leq f(f(f(a)
+\join b) \join c)$ and $f(f(a) \join b) \leq f(f(f(a) \join b))$).
 
-      \item Case $y = \emptyset$.
-        Because $x \subseteq y$, $x$ must also be the empty set. Then, $f(x) =
-        \emptyset \subseteq \emptyset = f(y)$.
-    \end{itemize}
-    Finally,
-    \begin{gather*}
-      f(f(a) \cup b)
-        = f(f(\set{0, 1}) \cup \set{0, 1, 2})
-        = f(\set{0} \cup \set{0, 1, 2})
-        = f(\set{0, 1, 2})
-        = \set{0, 1} \\
-        f(f(b) \cup a)
-        = f(f(\set{0, 1, 2}) \cup \set{0, 1})
-        = f(\set{0, 1} \cup \set{0, 1})
-        = f(\set{0, 1})
-        = \set{0}
-    \end{gather*}
-\end{itemize}
+What properties of $f$ and $\join$ are sufficient to ensure
+order-insensitivity?
 
-If $f$ is monotonic, and if $f(f(a) \cup b) = f(f(a \cup b))$, then $f$ is
-order-insensitive.
+\begin{claim}
+  Increasingness is insufficient.
+\end{claim}
+\begin{proof}
+  Let $A = \nats$, $a = \set{0}$, $b = \set{0, 1}$, and \[
+    f(x) = \begin{cases}
+      \set{0, 1} & x = \set{0} \\
+      \set{0, 1, 2} & x = \set{0, 1} \\
+      \set{0, 1, 2, 3} & x = \set{0, 1, 2} \\
+      x & \text{otherwise} \\
+    \end{cases}
+  \]
+  Clearly $f$ is increasing, but
+  \begin{gather*}
+    f(f(a) \cup b)
+      = f(f(\set{0}) \cup \set{0, 1})
+      = f(\set{0, 1} \cup \set{0, 1})
+      = f(\set{0, 1})
+      = \set{0, 1, 2} \\
+    f(f(b) \cup a)
+      = f(f(\set{0, 1}) \cup \set{0})
+      = f(\set{0, 1, 2} \cup \set{0})
+      = f(\set{0, 1, 2})
+      = \set{0, 1, 2, 3}
+  \end{gather*}
+\end{proof}
 
+\begin{claim}
+  Monotonicity is insufficient.
+\end{claim}
+\begin{proof}
+  Let $S = \nats$, $a = \set{0, 1}$, and $b = \set{0, 1, 2}$. Given a
+  non-empty set $x$, let $\max(x)$ be the largest element in $x$. Let \[
+    f(x) = \begin{cases}
+      \emptyset & x = \emptyset \\
+      x - \set{\max(x)} & x \neq \emptyset
+    \end{cases}
+  \]
+  Next, we show that $f$ is monotonic. Consider arbitrary $x, y \subseteq
+  \nats$ such that $x \subseteq y$.
+  \begin{itemize}
+    \item Case $x = \emptyset, y \neq \emptyset$.
+      $f(x) = \emptyset$ which is a subset of all other sets, including
+      $f(y)$.
+
+    \item Case $x \neq \emptyset, y \neq \emptyset$.
+      If $\max(x) = \max(y)$, then clearly $x - \set{\max(x)} \subseteq y -
+      \set{\max(y)}$. Otherwise, $\max(x) \neq \max(y)$. In this case,
+      $\max(y)$ cannot be smaller than $\max(x)$ because $\max(x) \in y$.
+      Thus, $\max(y) \geq \max(x)$ and therefore $\max(y) \notin x$. Thus, $x
+      - \set{\max(x)} \subseteq y - \set{\max(y)}$.
+
+    \item Case $y = \emptyset$.
+      Because $x \subseteq y$, $x$ must also be the empty set. Then, $f(x) =
+      \emptyset \subseteq \emptyset = f(y)$.
+  \end{itemize}
+  Finally,
+  \begin{gather*}
+    f(f(a) \join b)
+      = f(f(\set{0, 1}) \join \set{0, 1, 2})
+      = f(\set{0} \join \set{0, 1, 2})
+      = f(\set{0, 1, 2})
+      = \set{0, 1} \\
+      f(f(b) \join a)
+      = f(f(\set{0, 1, 2}) \join \set{0, 1})
+      = f(\set{0, 1} \join \set{0, 1})
+      = f(\set{0, 1})
+      = \set{0}
+  \end{gather*}
+\end{proof}
+
+\begin{claim}
+  The following properties are sufficient:
+  \begin{itemize}
+    \item
+      Monotonicity: $a \leq b \implies f(a) \leq f(b)$
+    \item
+      Idempotence: $f(f(x)) = f(x)$
+    \item
+      $\join$ is associative and commutative, $a \leq a \join b$, and $b \leq a
+      \join b$
+    \item
+      $f(f(a) \join b) = f(f(a \join b))$
+  \end{itemize}
+\end{claim}
+\begin{proof}
+  Here's a proof by example that's easy to formalize more carefully. First, we
+  show that $f$ is confluent.
+  \begin{align*}
+    f(f(f(a) \join b) \join c)
+      &= f(f(f(a \join b)) \join c) \\
+      &= f(f(f(a \join b \join c))) \\
+      &= f(f(f(c \join b \join a))) \\
+      &= f(f(f(c \join b)) \join a) \\
+      &= f(f(f(c) \join b) \join a) \\
+  \end{align*}
+
+  Next, we show that all intermediate results are less than the final result.
+  \begin{gather*}
+    f(a) \to f(f(a) \join b) \to f(f(f(a) \join b) \join c) \\
+    f(a) \to f(f(a \join b)) \to f(f(f(a \join b \join c))) \\
+    f(a) \to f(a \join b) \to f(a \join b \join c) \\
+    f(a) \subseteq f(a \join b) \subseteq f(a \join b \join c)
+  \end{gather*}
+\end{proof}
+
+Monotonic datalog programs satisfy all the conditions above.
 \end{document}
